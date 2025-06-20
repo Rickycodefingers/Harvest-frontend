@@ -2,10 +2,9 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { ArrowLeft } from 'lucide-react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { ArrowLeft, Check, Edit, Minus, Plus } from 'lucide-react';
 
 interface InvoiceItem {
   id: number;
@@ -16,30 +15,43 @@ interface InvoiceItem {
   status: 'normal' | 'credited' | 'returned';
 }
 
-interface InvoiceData {
+interface Invoice {
   vendor: string;
   date: string;
   items: InvoiceItem[];
 }
 
 const Confirmation = () => {
-  const [invoice, setInvoice] = useState<InvoiceData | null>(null);
+  const [invoice, setInvoice] = useState<Invoice | null>(null);
+  const [editingItem, setEditingItem] = useState<number | null>(null);
   const navigate = useNavigate();
 
   useEffect(() => {
-    const savedInvoice = localStorage.getItem('currentInvoice');
-    if (savedInvoice) {
-      setInvoice(JSON.parse(savedInvoice));
+    const storedInvoice = localStorage.getItem('currentInvoice');
+    if (storedInvoice) {
+      setInvoice(JSON.parse(storedInvoice));
     } else {
       navigate('/');
     }
   }, [navigate]);
 
-  const updateItem = (id: number, field: keyof InvoiceItem, value: any) => {
+  const updateItemStatus = (itemId: number, status: 'normal' | 'credited' | 'returned') => {
     if (!invoice) return;
     
     const updatedItems = invoice.items.map(item =>
-      item.id === id ? { ...item, [field]: value } : item
+      item.id === itemId ? { ...item, status } : item
+    );
+    
+    setInvoice({ ...invoice, items: updatedItems });
+  };
+
+  const updateItemQuantity = (itemId: number, change: number) => {
+    if (!invoice) return;
+    
+    const updatedItems = invoice.items.map(item =>
+      item.id === itemId 
+        ? { ...item, quantity: Math.max(0, item.quantity + change) }
+        : item
     );
     
     setInvoice({ ...invoice, items: updatedItems });
@@ -47,33 +59,34 @@ const Confirmation = () => {
 
   const getStatusColor = (status: string) => {
     switch (status) {
-      case 'credited': return 'bg-blue-100 text-blue-800';
-      case 'returned': return 'bg-red-100 text-red-800';
-      default: return 'bg-green-100 text-green-800';
+      case 'credited': return 'bg-blue-600 text-blue-100';
+      case 'returned': return 'bg-red-600 text-red-100';
+      default: return 'bg-green-600 text-green-100';
     }
   };
 
   const getTotalAmount = () => {
     if (!invoice) return 0;
-    return invoice.items
-      .filter(item => item.status === 'normal')
-      .reduce((total, item) => total + (item.quantity * item.price), 0);
+    return invoice.items.reduce((total, item) => {
+      if (item.status === 'credited') return total - (item.quantity * item.price);
+      if (item.status === 'returned') return total;
+      return total + (item.quantity * item.price);
+    }, 0);
   };
 
   const confirmInvoice = () => {
     if (!invoice) return;
     
-    // Save to invoices history
-    const existingInvoices = JSON.parse(localStorage.getItem('invoices') || '[]');
-    const invoiceWithTotal = {
+    const existingInvoices = JSON.parse(localStorage.getItem('confirmedInvoices') || '[]');
+    const confirmedInvoice = {
       ...invoice,
-      total: getTotalAmount(),
       id: Date.now(),
+      totalAmount: getTotalAmount(),
       confirmedAt: new Date().toISOString()
     };
     
-    existingInvoices.push(invoiceWithTotal);
-    localStorage.setItem('invoices', JSON.stringify(existingInvoices));
+    existingInvoices.push(confirmedInvoice);
+    localStorage.setItem('confirmedInvoices', JSON.stringify(existingInvoices));
     localStorage.removeItem('currentInvoice');
     
     navigate('/dashboard');
@@ -82,123 +95,136 @@ const Confirmation = () => {
   if (!invoice) return null;
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-orange-50 to-amber-50">
-      <div className="bg-white shadow-sm p-4 flex items-center gap-4">
-        <Button
-          variant="ghost"
-          onClick={() => navigate('/')}
-          className="p-2"
-        >
-          <ArrowLeft className="w-5 h-5" />
-        </Button>
-        <div>
-          <h1 className="text-xl font-bold text-gray-900">Confirm Invoice</h1>
-          <p className="text-sm text-gray-600">{invoice.vendor} • {invoice.date}</p>
+    <div className="min-h-screen bg-gradient-to-br from-gray-900 to-gray-800">
+      <div className="bg-gray-800 border-b border-gray-700 shadow-sm p-4">
+        <div className="flex items-center gap-4">
+          <Button
+            onClick={() => navigate('/')}
+            variant="ghost"
+            size="icon"
+            className="text-gray-300 hover:text-white hover:bg-gray-700"
+          >
+            <ArrowLeft className="w-5 h-5" />
+          </Button>
+          <div>
+            <h1 className="text-2xl font-bold text-white">Confirm Invoice</h1>
+            <p className="text-gray-300">Review and edit line items</p>
+          </div>
         </div>
       </div>
 
-      <div className="p-4 space-y-4">
-        {invoice.items.map((item) => (
-          <Card key={item.id} className="bg-white shadow-sm">
-            <CardContent className="p-4">
-              <div className="flex items-start justify-between mb-3">
-                <div className="flex-1">
-                  <Input
-                    value={item.name}
-                    onChange={(e) => updateItem(item.id, 'name', e.target.value)}
-                    className="font-medium text-gray-900 border-0 p-0 h-auto text-base bg-transparent focus-visible:ring-0"
-                  />
-                </div>
-                <Badge className={getStatusColor(item.status)}>
-                  {item.status}
-                </Badge>
-              </div>
-              
-              <div className="grid grid-cols-3 gap-3 mb-3">
-                <div>
-                  <label className="text-xs text-gray-500 block mb-1">Quantity</label>
-                  <Input
-                    type="number"
-                    value={item.quantity}
-                    onChange={(e) => updateItem(item.id, 'quantity', parseFloat(e.target.value))}
-                    className="h-8 text-sm"
-                  />
-                </div>
-                <div>
-                  <label className="text-xs text-gray-500 block mb-1">Unit</label>
-                  <Input
-                    value={item.unit}
-                    onChange={(e) => updateItem(item.id, 'unit', e.target.value)}
-                    className="h-8 text-sm"
-                  />
-                </div>
-                <div>
-                  <label className="text-xs text-gray-500 block mb-1">Price</label>
-                  <Input
-                    type="number"
-                    step="0.01"
-                    value={item.price}
-                    onChange={(e) => updateItem(item.id, 'price', parseFloat(e.target.value))}
-                    className="h-8 text-sm"
-                  />
-                </div>
-              </div>
+      <div className="p-6 space-y-6">
+        <Card className="bg-gray-800 border-gray-700">
+          <CardHeader>
+            <CardTitle className="text-white">{invoice.vendor}</CardTitle>
+            <p className="text-gray-300">{invoice.date}</p>
+          </CardHeader>
+        </Card>
 
-              <div className="flex gap-2">
-                <Button
-                  variant={item.status === 'normal' ? 'default' : 'outline'}
-                  size="sm"
-                  onClick={() => updateItem(item.id, 'status', 'normal')}
-                  className="flex-1 text-xs"
-                >
-                  Normal
-                </Button>
-                <Button
-                  variant={item.status === 'credited' ? 'default' : 'outline'}
-                  size="sm"
-                  onClick={() => updateItem(item.id, 'status', 'credited')}
-                  className="flex-1 text-xs"
-                >
-                  Credited
-                </Button>
-                <Button
-                  variant={item.status === 'returned' ? 'default' : 'outline'}
-                  size="sm"
-                  onClick={() => updateItem(item.id, 'status', 'returned')}
-                  className="flex-1 text-xs"
-                >
-                  Returned
-                </Button>
-              </div>
+        <div className="space-y-4">
+          {invoice.items.map((item) => (
+            <Card key={item.id} className="bg-gray-800 border-gray-700">
+              <CardContent className="p-4">
+                <div className="flex items-center justify-between mb-3">
+                  <div className="flex-1">
+                    <h3 className="font-semibold text-white">{item.name}</h3>
+                    <p className="text-gray-300 text-sm">
+                      {item.quantity} {item.unit} × ${item.price.toFixed(2)}
+                    </p>
+                  </div>
+                  <Badge className={getStatusColor(item.status)}>
+                    {item.status}
+                  </Badge>
+                </div>
 
-              <div className="mt-3 pt-3 border-t border-gray-100">
-                <div className="flex justify-between items-center">
-                  <span className="text-sm text-gray-600">Subtotal</span>
-                  <span className="font-medium text-gray-900">
-                    ${(item.quantity * item.price).toFixed(2)}
+                <div className="flex items-center gap-2 mb-3">
+                  <Button
+                    onClick={() => updateItemQuantity(item.id, -1)}
+                    size="icon"
+                    variant="outline"
+                    className="h-8 w-8 border-gray-600 text-gray-300 hover:bg-gray-700"
+                  >
+                    <Minus className="w-4 h-4" />
+                  </Button>
+                  <span className="text-white font-medium px-3">
+                    {item.quantity}
                   </span>
+                  <Button
+                    onClick={() => updateItemQuantity(item.id, 1)}
+                    size="icon"
+                    variant="outline"
+                    className="h-8 w-8 border-gray-600 text-gray-300 hover:bg-gray-700"
+                  >
+                    <Plus className="w-4 h-4" />
+                  </Button>
                 </div>
-              </div>
-            </CardContent>
-          </Card>
-        ))}
 
-        <Card className="bg-white shadow-sm">
+                <div className="flex gap-2">
+                  <Button
+                    onClick={() => updateItemStatus(item.id, 'normal')}
+                    size="sm"
+                    variant={item.status === 'normal' ? 'default' : 'outline'}
+                    className={item.status === 'normal' 
+                      ? 'bg-green-600 hover:bg-green-700 text-white' 
+                      : 'border-gray-600 text-gray-300 hover:bg-gray-700'
+                    }
+                  >
+                    Normal
+                  </Button>
+                  <Button
+                    onClick={() => updateItemStatus(item.id, 'credited')}
+                    size="sm"
+                    variant={item.status === 'credited' ? 'default' : 'outline'}
+                    className={item.status === 'credited' 
+                      ? 'bg-blue-600 hover:bg-blue-700 text-white' 
+                      : 'border-gray-600 text-gray-300 hover:bg-gray-700'
+                    }
+                  >
+                    Credited
+                  </Button>
+                  <Button
+                    onClick={() => updateItemStatus(item.id, 'returned')}
+                    size="sm"
+                    variant={item.status === 'returned' ? 'default' : 'outline'}
+                    className={item.status === 'returned' 
+                      ? 'bg-red-600 hover:bg-red-700 text-white' 
+                      : 'border-gray-600 text-gray-300 hover:bg-gray-700'
+                    }
+                  >
+                    Returned
+                  </Button>
+                </div>
+
+                <div className="mt-3 pt-3 border-t border-gray-700">
+                  <p className="text-right text-white font-semibold">
+                    ${(item.quantity * item.price).toFixed(2)}
+                    {item.status === 'credited' && (
+                      <span className="text-blue-400 ml-2">(Credited)</span>
+                    )}
+                    {item.status === 'returned' && (
+                      <span className="text-red-400 ml-2">(Returned)</span>
+                    )}
+                  </p>
+                </div>
+              </CardContent>
+            </Card>
+          ))}
+        </div>
+
+        <Card className="bg-gray-800 border-gray-700">
           <CardContent className="p-4">
-            <div className="flex justify-between items-center text-lg font-semibold">
-              <span>Total Amount</span>
-              <span className="text-green-600">${getTotalAmount().toFixed(2)}</span>
+            <div className="flex justify-between items-center text-xl font-bold">
+              <span className="text-white">Total Amount:</span>
+              <span className="text-green-400">${getTotalAmount().toFixed(2)}</span>
             </div>
-            <p className="text-xs text-gray-500 mt-1">
-              Excludes credited and returned items
-            </p>
           </CardContent>
         </Card>
 
         <Button
           onClick={confirmInvoice}
-          className="w-full bg-green-600 hover:bg-green-700 text-white py-4 rounded-xl text-lg font-medium mt-6"
+          className="w-full bg-green-600 hover:bg-green-700 text-white py-3 rounded-xl text-lg font-medium"
         >
+          <Check className="w-5 h-5 mr-2" />
           Confirm Invoice
         </Button>
       </div>
