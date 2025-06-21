@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, LineChart, Line } from 'recharts';
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 import { Camera, TrendingUp, DollarSign, ShoppingCart, Calendar } from 'lucide-react';
 import { format, parseISO, startOfDay, isWithinInterval, subDays } from 'date-fns';
 
@@ -97,24 +97,26 @@ const Dashboard = () => {
   const stats = getTotalStats();
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-900 to-gray-800">
-      <div className="bg-gray-800 border-b border-gray-700 shadow-sm p-4">
-        <div className="flex items-center justify-between">
-          <div>
-            <h1 className="text-2xl font-bold text-white">Food Cost Dashboard</h1>
-            <p className="text-gray-300">Track your kitchen expenses</p>
+    <div className="min-h-screen gradient-bg-light">
+      <div className="bg-white border-b border-slate-200 shadow-sm">
+        <div className="max-w-7xl mx-auto px-4 py-6">
+          <div className="flex items-center justify-between">
+            <div>
+              <h1 className="text-3xl font-bold text-slate-900">Food Cost Dashboard</h1>
+              <p className="text-slate-600 mt-2">Track your kitchen expenses and optimize costs</p>
+            </div>
+            <Button
+              onClick={() => navigate('/')}
+              className="bg-gradient-to-r from-violet-600 to-purple-600 hover:from-violet-700 hover:to-purple-700 text-white shadow-lg transition-all duration-200 hover:shadow-xl"
+            >
+              <Camera className="w-4 h-4 mr-2" />
+              New Invoice
+            </Button>
           </div>
-          <Button
-            onClick={() => navigate('/')}
-            className="bg-green-600 hover:bg-green-700 text-white"
-          >
-            <Camera className="w-4 h-4 mr-2" />
-            New Invoice
-          </Button>
         </div>
       </div>
 
-      <div className="p-6 space-y-6">
+      <div className="max-w-7xl mx-auto px-4 py-8 space-y-8">
         {/* Period Selector */}
         <div className="flex gap-2">
           {(['7d', '30d', '90d'] as const).map((period) => (
@@ -124,8 +126,8 @@ const Dashboard = () => {
               variant={selectedPeriod === period ? 'default' : 'outline'}
               size="sm"
               className={selectedPeriod === period 
-                ? 'bg-green-600 hover:bg-green-700 text-white' 
-                : 'border-gray-600 text-gray-300 hover:bg-gray-700'
+                ? 'bg-violet-600 hover:bg-violet-700 text-white shadow-md' 
+                : 'border-slate-300 text-slate-600 hover:bg-slate-50'
               }
             >
               {period === '7d' ? '7 Days' : period === '30d' ? '30 Days' : '90 Days'}
@@ -134,41 +136,47 @@ const Dashboard = () => {
         </div>
 
         {/* Stats Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <Card className="bg-gray-800 border-gray-700">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <Card className="bg-white border-slate-200 shadow-sm hover:shadow-md transition-shadow duration-200">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium text-gray-300">Total Spent</CardTitle>
-              <DollarSign className="h-4 w-4 text-green-400" />
+              <CardTitle className="text-sm font-medium text-slate-600">Total Spent</CardTitle>
+              <div className="h-8 w-8 bg-gradient-to-br from-green-400 to-green-600 rounded-lg flex items-center justify-center">
+                <DollarSign className="h-4 w-4 text-white" />
+              </div>
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold text-white">${stats.totalAmount.toFixed(2)}</div>
-              <p className="text-xs text-gray-400">
+              <div className="text-3xl font-bold text-slate-900">${stats.totalAmount.toFixed(2)}</div>
+              <p className="text-xs text-slate-500 mt-1">
                 Last {selectedPeriod === '7d' ? '7' : selectedPeriod === '30d' ? '30' : '90'} days
               </p>
             </CardContent>
           </Card>
 
-          <Card className="bg-gray-800 border-gray-700">
+          <Card className="bg-white border-slate-200 shadow-sm hover:shadow-md transition-shadow duration-200">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium text-gray-300">Total Invoices</CardTitle>
-              <ShoppingCart className="h-4 w-4 text-green-400" />
+              <CardTitle className="text-sm font-medium text-slate-600">Total Invoices</CardTitle>
+              <div className="h-8 w-8 bg-gradient-to-br from-blue-400 to-blue-600 rounded-lg flex items-center justify-center">
+                <ShoppingCart className="h-4 w-4 text-white" />
+              </div>
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold text-white">{stats.totalInvoices}</div>
-              <p className="text-xs text-gray-400">
+              <div className="text-3xl font-bold text-slate-900">{stats.totalInvoices}</div>
+              <p className="text-xs text-slate-500 mt-1">
                 Processed invoices
               </p>
             </CardContent>
           </Card>
 
-          <Card className="bg-gray-800 border-gray-700">
+          <Card className="bg-white border-slate-200 shadow-sm hover:shadow-md transition-shadow duration-200">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium text-gray-300">Average Invoice</CardTitle>
-              <TrendingUp className="h-4 w-4 text-green-400" />
+              <CardTitle className="text-sm font-medium text-slate-600">Average Invoice</CardTitle>
+              <div className="h-8 w-8 bg-gradient-to-br from-purple-400 to-purple-600 rounded-lg flex items-center justify-center">
+                <TrendingUp className="h-4 w-4 text-white" />
+              </div>
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold text-white">${stats.averageInvoice.toFixed(2)}</div>
-              <p className="text-xs text-gray-400">
+              <div className="text-3xl font-bold text-slate-900">${stats.averageInvoice.toFixed(2)}</div>
+              <p className="text-xs text-slate-500 mt-1">
                 Per invoice
               </p>
             </CardContent>
@@ -176,35 +184,51 @@ const Dashboard = () => {
         </div>
 
         {/* Daily Spending Chart */}
-        <Card className="bg-gray-800 border-gray-700">
+        <Card className="bg-white border-slate-200 shadow-sm">
           <CardHeader>
-            <CardTitle className="text-white">Daily Food Costs</CardTitle>
+            <CardTitle className="text-slate-900 text-xl">Daily Food Costs</CardTitle>
+            <p className="text-slate-600 text-sm">Track your spending patterns over time</p>
           </CardHeader>
           <CardContent>
             <div className="h-80">
               <ResponsiveContainer width="100%" height="100%">
-                <BarChart data={dailyData}>
-                  <CartesianGrid strokeDasharray="3 3" stroke="#374151" />
+                <BarChart data={dailyData} margin={{ top: 20, right: 30, left: 20, bottom: 5 }}>
+                  <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" />
                   <XAxis 
                     dataKey="date" 
-                    stroke="#9CA3AF"
+                    stroke="#64748b"
                     fontSize={12}
+                    tickLine={false}
+                    axisLine={false}
                   />
                   <YAxis 
-                    stroke="#9CA3AF"
+                    stroke="#64748b"
                     fontSize={12}
                     tickFormatter={(value) => `$${value}`}
+                    tickLine={false}
+                    axisLine={false}
                   />
                   <Tooltip 
                     contentStyle={{ 
-                      backgroundColor: '#1F2937', 
-                      border: '1px solid #374151',
-                      borderRadius: '6px',
-                      color: '#F9FAFB'
+                      backgroundColor: 'white', 
+                      border: '1px solid #e2e8f0',
+                      borderRadius: '8px',
+                      color: '#1e293b',
+                      boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.1)'
                     }}
                     formatter={(value) => [`$${Number(value).toFixed(2)}`, 'Amount']}
                   />
-                  <Bar dataKey="amount" fill="#059669" radius={[4, 4, 0, 0]} />
+                  <Bar 
+                    dataKey="amount" 
+                    fill="url(#colorGradient)" 
+                    radius={[4, 4, 0, 0]}
+                  />
+                  <defs>
+                    <linearGradient id="colorGradient" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="5%" stopColor="#8b5cf6" stopOpacity={0.9}/>
+                      <stop offset="95%" stopColor="#a855f7" stopOpacity={0.7}/>
+                    </linearGradient>
+                  </defs>
                 </BarChart>
               </ResponsiveContainer>
             </div>
@@ -213,21 +237,22 @@ const Dashboard = () => {
 
         {/* Top Vendors */}
         {topVendors.length > 0 && (
-          <Card className="bg-gray-800 border-gray-700">
+          <Card className="bg-white border-slate-200 shadow-sm">
             <CardHeader>
-              <CardTitle className="text-white">Top Vendors</CardTitle>
+              <CardTitle className="text-slate-900 text-xl">Top Vendors</CardTitle>
+              <p className="text-slate-600 text-sm">Your most frequently used suppliers</p>
             </CardHeader>
             <CardContent>
-              <div className="space-y-3">
+              <div className="space-y-4">
                 {topVendors.map((vendor, index) => (
-                  <div key={vendor.vendor} className="flex items-center justify-between">
-                    <div className="flex items-center gap-3">
-                      <div className="w-8 h-8 bg-green-600 rounded-full flex items-center justify-center text-white font-bold text-sm">
+                  <div key={vendor.vendor} className="flex items-center justify-between p-4 bg-slate-50 rounded-lg">
+                    <div className="flex items-center gap-4">
+                      <div className="w-10 h-10 bg-gradient-to-br from-violet-500 to-purple-600 rounded-full flex items-center justify-center text-white font-bold">
                         {index + 1}
                       </div>
-                      <span className="text-white font-medium">{vendor.vendor}</span>
+                      <span className="text-slate-900 font-medium">{vendor.vendor}</span>
                     </div>
-                    <span className="text-green-400 font-semibold">${vendor.total.toFixed(2)}</span>
+                    <span className="text-violet-600 font-semibold text-lg">${vendor.total.toFixed(2)}</span>
                   </div>
                 ))}
               </div>
@@ -236,25 +261,28 @@ const Dashboard = () => {
         )}
 
         {/* Recent Invoices Table */}
-        <Card className="bg-gray-800 border-gray-700">
+        <Card className="bg-white border-slate-200 shadow-sm">
           <CardHeader>
-            <CardTitle className="text-white">Recent Invoices</CardTitle>
+            <CardTitle className="text-slate-900 text-xl">Recent Invoices</CardTitle>
+            <p className="text-slate-600 text-sm">Latest invoice activity</p>
           </CardHeader>
           <CardContent>
             {invoices.length === 0 ? (
-              <div className="text-center py-8">
-                <Calendar className="w-12 h-12 text-gray-500 mx-auto mb-4" />
-                <p className="text-gray-400">No invoices yet</p>
-                <p className="text-gray-500 text-sm">Start by scanning your first invoice</p>
+              <div className="text-center py-12">
+                <div className="w-16 h-16 bg-slate-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                  <Calendar className="w-8 h-8 text-slate-400" />
+                </div>
+                <h3 className="text-slate-900 font-medium mb-2">No invoices yet</h3>
+                <p className="text-slate-500 text-sm">Start by scanning your first invoice</p>
               </div>
             ) : (
               <Table>
                 <TableHeader>
-                  <TableRow className="border-gray-700">
-                    <TableHead className="text-gray-300">Date</TableHead>
-                    <TableHead className="text-gray-300">Vendor</TableHead>
-                    <TableHead className="text-gray-300">Items</TableHead>
-                    <TableHead className="text-right text-gray-300">Amount</TableHead>
+                  <TableRow className="border-slate-200">
+                    <TableHead className="text-slate-600 font-medium">Date</TableHead>
+                    <TableHead className="text-slate-600 font-medium">Vendor</TableHead>
+                    <TableHead className="text-slate-600 font-medium">Items</TableHead>
+                    <TableHead className="text-right text-slate-600 font-medium">Amount</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
@@ -262,37 +290,37 @@ const Dashboard = () => {
                     .sort((a, b) => new Date(b.confirmedAt).getTime() - new Date(a.confirmedAt).getTime())
                     .slice(0, 10)
                     .map((invoice) => (
-                    <TableRow key={invoice.id} className="border-gray-700">
-                      <TableCell className="text-gray-300">
+                    <TableRow key={invoice.id} className="border-slate-200 hover:bg-slate-50">
+                      <TableCell className="text-slate-600">
                         {format(parseISO(invoice.confirmedAt), 'MMM dd, yyyy')}
                       </TableCell>
-                      <TableCell className="text-white font-medium">{invoice.vendor}</TableCell>
+                      <TableCell className="text-slate-900 font-medium">{invoice.vendor}</TableCell>
                       <TableCell>
                         <div className="flex gap-1 flex-wrap">
                           {invoice.items.slice(0, 2).map((item) => (
-                            <Badge key={item.id} variant="outline" className="text-xs border-gray-600 text-gray-300">
+                            <Badge key={item.id} variant="outline" className="text-xs border-slate-300 text-slate-600 bg-slate-50">
                               {item.name}
                             </Badge>
                           ))}
                           {invoice.items.length > 2 && (
-                            <Badge variant="outline" className="text-xs border-gray-600 text-gray-300">
+                            <Badge variant="outline" className="text-xs border-slate-300 text-slate-600 bg-slate-50">
                               +{invoice.items.length - 2} more
                             </Badge>
                           )}
                         </div>
                       </TableCell>
                       <TableCell className="text-right">
-                        <span className="text-green-400 font-semibold">
+                        <span className="text-violet-600 font-semibold">
                           ${invoice.totalAmount.toFixed(2)}
                         </span>
                       </TableCell>
                     </TableRow>
                   ))}
-                </TableBody>
-              </Table>
-            )}
-          </CardContent>
-        </Card>
+                </Table>
+              )}
+            </CardContent>
+          </Card>
+        )}
       </div>
     </div>
   );
