@@ -97,17 +97,17 @@ const Dashboard = () => {
   const stats = getTotalStats();
 
   return (
-    <div className="min-h-screen gradient-bg-light">
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-indigo-50">
       <div className="bg-white border-b border-slate-200 shadow-sm">
         <div className="max-w-7xl mx-auto px-4 py-6">
           <div className="flex items-center justify-between">
             <div>
-              <h1 className="text-3xl font-bold text-slate-900">Food Cost Dashboard</h1>
+              <h1 className="text-3xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">Food Cost Dashboard</h1>
               <p className="text-slate-600 mt-2">Track your kitchen expenses and optimize costs</p>
             </div>
             <Button
               onClick={() => navigate('/')}
-              className="bg-gradient-to-r from-violet-600 to-purple-600 hover:from-violet-700 hover:to-purple-700 text-white shadow-lg transition-all duration-200 hover:shadow-xl"
+              className="bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white shadow-lg transition-all duration-200 hover:shadow-xl border-0"
             >
               <Camera className="w-4 h-4 mr-2" />
               New Invoice
@@ -126,7 +126,7 @@ const Dashboard = () => {
               variant={selectedPeriod === period ? 'default' : 'outline'}
               size="sm"
               className={selectedPeriod === period 
-                ? 'bg-violet-600 hover:bg-violet-700 text-white shadow-md' 
+                ? 'bg-indigo-600 hover:bg-indigo-700 text-white shadow-md border-0' 
                 : 'border-slate-300 text-slate-600 hover:bg-slate-50'
               }
             >
@@ -140,7 +140,7 @@ const Dashboard = () => {
           <Card className="bg-white border-slate-200 shadow-sm hover:shadow-md transition-shadow duration-200">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium text-slate-600">Total Spent</CardTitle>
-              <div className="h-8 w-8 bg-gradient-to-br from-green-400 to-green-600 rounded-lg flex items-center justify-center">
+              <div className="h-8 w-8 bg-gradient-to-br from-emerald-400 to-emerald-600 rounded-lg flex items-center justify-center">
                 <DollarSign className="h-4 w-4 text-white" />
               </div>
             </CardHeader>
@@ -170,7 +170,7 @@ const Dashboard = () => {
           <Card className="bg-white border-slate-200 shadow-sm hover:shadow-md transition-shadow duration-200">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium text-slate-600">Average Invoice</CardTitle>
-              <div className="h-8 w-8 bg-gradient-to-br from-purple-400 to-purple-600 rounded-lg flex items-center justify-center">
+              <div className="h-8 w-8 bg-gradient-to-br from-indigo-400 to-purple-600 rounded-lg flex items-center justify-center">
                 <TrendingUp className="h-4 w-4 text-white" />
               </div>
             </CardHeader>
@@ -225,8 +225,8 @@ const Dashboard = () => {
                   />
                   <defs>
                     <linearGradient id="colorGradient" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="5%" stopColor="#8b5cf6" stopOpacity={0.9}/>
-                      <stop offset="95%" stopColor="#a855f7" stopOpacity={0.7}/>
+                      <stop offset="5%" stopColor="#4f46e5" stopOpacity={0.9}/>
+                      <stop offset="95%" stopColor="#7c3aed" stopOpacity={0.7}/>
                     </linearGradient>
                   </defs>
                 </BarChart>
@@ -247,12 +247,12 @@ const Dashboard = () => {
                 {topVendors.map((vendor, index) => (
                   <div key={vendor.vendor} className="flex items-center justify-between p-4 bg-slate-50 rounded-lg">
                     <div className="flex items-center gap-4">
-                      <div className="w-10 h-10 bg-gradient-to-br from-violet-500 to-purple-600 rounded-full flex items-center justify-center text-white font-bold">
+                      <div className="w-10 h-10 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-full flex items-center justify-center text-white font-bold">
                         {index + 1}
                       </div>
                       <span className="text-slate-900 font-medium">{vendor.vendor}</span>
                     </div>
-                    <span className="text-violet-600 font-semibold text-lg">${vendor.total.toFixed(2)}</span>
+                    <span className="text-indigo-600 font-semibold text-lg">${vendor.total.toFixed(2)}</span>
                   </div>
                 ))}
               </div>
@@ -310,17 +310,17 @@ const Dashboard = () => {
                         </div>
                       </TableCell>
                       <TableCell className="text-right">
-                        <span className="text-violet-600 font-semibold">
+                        <span className="text-indigo-600 font-semibold">
                           ${invoice.totalAmount.toFixed(2)}
                         </span>
                       </TableCell>
                     </TableRow>
                   ))}
-                </Table>
-              )}
-            </CardContent>
-          </Card>
-        )}
+                </TableBody>
+              </Table>
+            )}
+          </CardContent>
+        </Card>
       </div>
     </div>
   );
