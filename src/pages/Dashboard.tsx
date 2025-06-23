@@ -1,13 +1,14 @@
-
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useAuth } from '@/contexts/AuthContext';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
-import { Camera, TrendingUp, DollarSign, ShoppingCart, Calendar } from 'lucide-react';
+import { Camera, TrendingUp, DollarSign, ShoppingCart, Calendar, LogOut } from 'lucide-react';
 import { format, parseISO, startOfDay, isWithinInterval, subDays } from 'date-fns';
+import { toast } from 'sonner';
 
 interface ConfirmedInvoice {
   id: number;
@@ -29,6 +30,17 @@ const Dashboard = () => {
   const [invoices, setInvoices] = useState<ConfirmedInvoice[]>([]);
   const [selectedPeriod, setSelectedPeriod] = useState<'7d' | '30d' | '90d'>('7d');
   const navigate = useNavigate();
+  const { signOut, user } = useAuth();
+
+  const handleSignOut = async () => {
+    try {
+      await signOut();
+      toast.success('Signed out successfully');
+      navigate('/login');
+    } catch (error) {
+      toast.error('Error signing out');
+    }
+  };
 
   useEffect(() => {
     const confirmedInvoices = JSON.parse(localStorage.getItem('confirmedInvoices') || '[]');
@@ -104,14 +116,27 @@ const Dashboard = () => {
             <div>
               <h1 className="text-3xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">Food Cost Dashboard</h1>
               <p className="text-slate-600 mt-2">Track your kitchen expenses and optimize costs</p>
+              {user?.email && (
+                <p className="text-sm text-slate-500 mt-1">Welcome back, {user.email}</p>
+              )}
             </div>
-            <Button
-              onClick={() => navigate('/')}
-              className="bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white shadow-lg transition-all duration-200 hover:shadow-xl border-0"
-            >
-              <Camera className="w-4 h-4 mr-2" />
-              New Invoice
-            </Button>
+            <div className="flex gap-3">
+              <Button
+                onClick={() => navigate('/')}
+                className="bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white shadow-lg transition-all duration-200 hover:shadow-xl border-0"
+              >
+                <Camera className="w-4 h-4 mr-2" />
+                New Invoice
+              </Button>
+              <Button
+                onClick={handleSignOut}
+                variant="outline"
+                className="border-slate-300 text-slate-600 hover:bg-slate-50"
+              >
+                <LogOut className="w-4 h-4 mr-2" />
+                Sign Out
+              </Button>
+            </div>
           </div>
         </div>
       </div>
