@@ -53,17 +53,17 @@ const Login = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-indigo-50 flex items-center justify-center p-4">
+    <div className="min-h-screen bg-background flex items-center justify-center p-4">
       <div className="w-full max-w-md">
-        <Card className="border-slate-200 shadow-xl">
+        <Card className="border shadow-xl">
           <CardHeader className="text-center space-y-2">
-            <div className="w-16 h-16 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-xl mx-auto flex items-center justify-center mb-4">
-              <AlertCircle className="w-8 h-8 text-white" />
+            <div className="w-16 h-16 bg-primary rounded-xl mx-auto flex items-center justify-center mb-4">
+              <AlertCircle className="w-8 h-8 text-primary-foreground" />
             </div>
-            <CardTitle className="text-2xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">
+            <CardTitle className="text-2xl font-bold text-foreground">
               Invoice Scanner
             </CardTitle>
-            <CardDescription className="text-slate-600">
+            <CardDescription>
               {isSignUp ? 'Create your account to get started' : 'Sign in to your account'}
             </CardDescription>
           </CardHeader>
@@ -74,7 +74,7 @@ const Login = () => {
                 type="button"
                 variant="outline"
                 onClick={() => handleOAuthLogin('google')}
-                className="w-full border-slate-300 hover:bg-slate-50"
+                className="w-full"
               >
                 <svg className="w-5 h-5 mr-2" viewBox="0 0 24 24">
                   <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
@@ -88,16 +88,16 @@ const Login = () => {
 
             <div className="relative">
               <div className="absolute inset-0 flex items-center">
-                <span className="w-full border-t border-slate-300" />
+                <span className="w-full border-t" />
               </div>
               <div className="relative flex justify-center text-xs uppercase">
-                <span className="bg-white px-2 text-slate-500">Or continue with email</span>
+                <span className="bg-background px-2 text-muted-foreground">Or continue with email</span>
               </div>
             </div>
 
             <form onSubmit={handleSubmit} className="space-y-4">
               <div className="space-y-2">
-                <Label htmlFor="email" className="text-slate-700 font-medium">
+                <Label htmlFor="email" className="font-medium">
                   Email
                 </Label>
                 <Input
@@ -107,12 +107,11 @@ const Login = () => {
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   required
-                  className="border-slate-300 focus:border-indigo-500 focus:ring-indigo-500"
                 />
               </div>
               
               <div className="space-y-2">
-                <Label htmlFor="password" className="text-slate-700 font-medium">
+                <Label htmlFor="password" className="font-medium">
                   Password
                 </Label>
                 <div className="relative">
@@ -123,12 +122,12 @@ const Login = () => {
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                     required
-                    className="border-slate-300 focus:border-indigo-500 focus:ring-indigo-500 pr-10"
+                    className="pr-10"
                   />
                   <button
                     type="button"
                     onClick={() => setShowPassword(!showPassword)}
-                    className="absolute right-3 top-1/2 transform -translate-y-1/2 text-slate-400 hover:text-slate-600"
+                    className="absolute right-3 top-1/2 transform -translate-y-1/2 text-muted-foreground hover:text-foreground"
                   >
                     {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                   </button>
@@ -138,7 +137,7 @@ const Login = () => {
               <Button
                 type="submit"
                 disabled={isLoading}
-                className="w-full bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white font-medium py-2.5 shadow-md hover:shadow-lg transition-all duration-200 border-0"
+                className="w-full font-medium py-2.5 shadow-md hover:shadow-lg transition-all duration-200"
               >
                 {isLoading ? 'Loading...' : isSignUp ? 'Create Account' : 'Sign In'}
               </Button>
@@ -148,7 +147,7 @@ const Login = () => {
               <button
                 type="button"
                 onClick={() => setIsSignUp(!isSignUp)}
-                className="text-indigo-600 hover:text-indigo-700 font-medium text-sm"
+                className="text-primary hover:text-primary/80 font-medium text-sm"
               >
                 {isSignUp ? 'Already have an account? Sign in' : 'Need an account? Sign up'}
               </button>
