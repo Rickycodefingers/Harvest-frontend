@@ -80,7 +80,7 @@ const Camera = () => {
                 />
                 <Button
                   onClick={() => fileInputRef.current?.click()}
-                  className="w-full bg-gradient-to-r from-violet-600 to-purple-600 hover:from-violet-700 hover:to-purple-700 text-white py-4 rounded-xl text-lg font-semibold shadow-lg transition-all duration-200 hover:shadow-xl"
+                  className="w-full bg-black hover:purple-600 text-white py-4 rounded-xl text-lg font-semibold shadow-lg transition-all duration-200 hover:shadow-xl"
                   disabled={isCapturing}
                 >
                   {isCapturing ? 'Processing...' : 'Open Camera'}
