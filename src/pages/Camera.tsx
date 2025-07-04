@@ -1,4 +1,3 @@
-
 import React, { useState, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
@@ -80,7 +79,7 @@ const Camera = () => {
                 />
                 <Button
                   onClick={() => fileInputRef.current?.click()}
-                  className="w-full bg-black hover:purple-600 text-white py-4 rounded-xl text-lg font-semibold shadow-lg transition-all duration-200 hover:shadow-xl"
+                  className="w-full bg-black hover:bg-white hover:text-black border border-black hover:border-black text-white py-4 rounded-xl text-lg font-semibold shadow-lg transition-all duration-200 hover:shadow-xl"
                   disabled={isCapturing}
                 >
                   {isCapturing ? 'Processing...' : 'Open Camera'}

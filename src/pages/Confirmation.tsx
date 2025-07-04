@@ -167,7 +167,7 @@ const Confirmation = () => {
                     variant={item.status === 'normal' ? 'default' : 'outline'}
                     className={item.status === 'normal' 
                       ? 'bg-green-600 hover:bg-green-700 text-white' 
-                      : 'border-slate-300 text-slate-600 hover:bg-slate-50'
+                      : 'border-slate-300 text-slate-600 hover:bg-green-600 hover:text-white'
                     }
                   >
                     Normal
@@ -178,7 +178,7 @@ const Confirmation = () => {
                     variant={item.status === 'credited' ? 'default' : 'outline'}
                     className={item.status === 'credited' 
                       ? 'bg-blue-600 hover:bg-blue-700 text-white' 
-                      : 'border-slate-300 text-slate-600 hover:bg-slate-50'
+                      : 'border-slate-300 text-slate-600 hover:bg-blue-600 hover:text-white'
                     }
                   >
                     Credited
@@ -189,7 +189,7 @@ const Confirmation = () => {
                     variant={item.status === 'returned' ? 'default' : 'outline'}
                     className={item.status === 'returned' 
                       ? 'bg-red-600 hover:bg-red-700 text-white' 
-                      : 'border-slate-300 text-slate-600 hover:bg-slate-50'
+                      : 'border-slate-300 text-slate-600 hover:bg-red-600 hover:text-white'
                     }
                   >
                     Returned
