@@ -15,8 +15,11 @@ interface InvoiceItem {
 }
 
 interface Invoice {
+  invoice_id: number;
   vendor: string;
   date: string;
+  totalAmount: number;
+  confirmedAt: string;
   items: InvoiceItem[];
 }
 
@@ -66,11 +69,14 @@ const Confirmation = () => {
 
   const getTotalAmount = () => {
     if (!invoice) return 0;
-    return invoice.items.reduce((total, item) => {
+    // Use the API-provided totalAmount as base, then adjust for status changes
+    const baseTotal = invoice.totalAmount;
+    const adjustments = invoice.items.reduce((total, item) => {
       if (item.status === 'credited') return total - (item.quantity * item.price);
-      if (item.status === 'returned') return total;
-      return total + (item.quantity * item.price);
+      if (item.status === 'returned') return total - (item.quantity * item.price);
+      return total;
     }, 0);
+    return baseTotal + adjustments;
   };
 
   const confirmInvoice = () => {

@@ -2,6 +2,7 @@ import React, { useState, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Camera as CameraIcon, RotateCcw } from 'lucide-react';
+import { toast } from 'sonner';
 
 const Camera = () => {
   const [image, setImage] = useState<string | null>(null);
@@ -28,21 +29,58 @@ const Camera = () => {
     }
   };
 
-  const proceedToConfirmation = () => {
-    // In a real app, this would process the image with OCR
-    const mockInvoiceData = {
-      vendor: "Fresh Foods Supplier",
-      date: new Date().toISOString().split('T')[0],
-      items: [
-        { id: 1, name: "Organic Tomatoes", quantity: 5, unit: "kg", price: 12.50, status: "normal" },
-        { id: 2, name: "Premium Olive Oil", quantity: 2, unit: "bottles", price: 28.00, status: "normal" },
-        { id: 3, name: "Fresh Basil", quantity: 3, unit: "bunches", price: 8.75, status: "normal" },
-        { id: 4, name: "Mozzarella Cheese", quantity: 1, unit: "kg", price: 15.20, status: "normal" }
-      ]
-    };
+  const proceedToConfirmation = async () => {
+    if (!image) {
+      toast.error('No image captured');
+      return;
+    }
+
+    setIsCapturing(true);
     
-    localStorage.setItem('currentInvoice', JSON.stringify(mockInvoiceData));
-    navigate('/confirm');
+    try {
+      // Convert the captured image to base64
+      const canvas = document.createElement('canvas');
+      const ctx = canvas.getContext('2d');
+      const img = new Image();
+      
+      img.onload = async () => {
+        canvas.width = img.width;
+        canvas.height = img.height;
+        ctx?.drawImage(img, 0, 0);
+        
+        const base64Image = canvas.toDataURL('image/jpeg');
+        
+        // Call the backend API
+        const response = await fetch('https://gpt-invoice-parser-1.onrender.com/api/invoice', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            image: base64Image
+          }),
+        });
+
+        if (!response.ok) {
+          const errorData = await response.json();
+          throw new Error(errorData.error || 'Failed to process invoice');
+        }
+
+        const invoiceData = await response.json();
+        
+        // Store the processed invoice data
+        localStorage.setItem('currentInvoice', JSON.stringify(invoiceData));
+        navigate('/confirmation');
+      };
+      
+      img.src = image;
+      
+    } catch (error) {
+      console.error('Error processing invoice:', error);
+      toast.error(error instanceof Error ? error.message : 'Failed to process invoice');
+    } finally {
+      setIsCapturing(false);
+    }
   };
 
   return (
@@ -106,6 +144,7 @@ const Camera = () => {
                   <Button
                     onClick={proceedToConfirmation}
                     className="flex-1 bg-gradient-to-r from-violet-600 to-purple-600 hover:from-violet-700 hover:to-purple-700 text-white py-4 rounded-xl font-semibold shadow-lg transition-all duration-200 hover:shadow-xl"
+                    disabled={isCapturing}
                   >
                     Continue
                   </Button>
