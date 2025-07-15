@@ -28,7 +28,7 @@ const App = () => (
                 <Camera />
               </ProtectedRoute>
             } />
-            <Route path="/confirm" element={
+            <Route path="/confirmation" element={
               <ProtectedRoute>
                 <Confirmation />
               </ProtectedRoute>

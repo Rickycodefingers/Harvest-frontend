@@ -35,51 +35,46 @@ const Camera = () => {
       return;
     }
 
-    setIsCapturing(true);
-    
     try {
-      // Convert the captured image to base64
       const canvas = document.createElement('canvas');
       const ctx = canvas.getContext('2d');
       const img = new Image();
-      
+
       img.onload = async () => {
+        setIsCapturing(true);
+
         canvas.width = img.width;
         canvas.height = img.height;
         ctx?.drawImage(img, 0, 0);
-        
+
         const base64Image = canvas.toDataURL('image/jpeg');
-        
-        // Call the backend API
-        const response = await fetch('https://gpt-invoice-parser-1.onrender.com/api/invoice', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            image: base64Image
-          }),
-        });
 
-        if (!response.ok) {
-          const errorData = await response.json();
-          throw new Error(errorData.error || 'Failed to process invoice');
+        try {
+          const response = await fetch('https://gpt-invoice-parser-1.onrender.com/api/invoice', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ image: base64Image }),
+          });
+
+          if (!response.ok) {
+            const errorData = await response.json();
+            throw new Error(errorData.error || 'Failed to process invoice');
+          }
+
+          const invoiceData = await response.json();
+          localStorage.setItem('currentInvoice', JSON.stringify(invoiceData));
+          navigate('/confirmation');
+        } catch (error) {
+          console.error('Error processing invoice:', error);
+          toast.error(error instanceof Error ? error.message : 'Failed to process invoice');
+        } finally {
+          setIsCapturing(false);
         }
-
-        const invoiceData = await response.json();
-        
-        // Store the processed invoice data
-        localStorage.setItem('currentInvoice', JSON.stringify(invoiceData));
-        navigate('/confirmation');
       };
-      
+
       img.src = image;
-      
     } catch (error) {
-      console.error('Error processing invoice:', error);
-      toast.error(error instanceof Error ? error.message : 'Failed to process invoice');
-    } finally {
-      setIsCapturing(false);
+      toast.error('Failed to process image');
     }
   };
 
@@ -146,7 +141,15 @@ const Camera = () => {
                     className="flex-1 bg-gradient-to-r from-violet-600 to-purple-600 hover:from-violet-700 hover:to-purple-700 text-white py-4 rounded-xl font-semibold shadow-lg transition-all duration-200 hover:shadow-xl"
                     disabled={isCapturing}
                   >
-                    Continue
+                    {isCapturing ? (
+                      <span className="mr-2 inline-block align-middle">
+                        <svg className="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                          <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                          <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"></path>
+                        </svg>
+                      </span>
+                    ) : null}
+                    {isCapturing ? 'Processing...' : 'Continue'}
                   </Button>
                 </div>
               </div>

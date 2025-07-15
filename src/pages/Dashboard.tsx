@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 import { Button } from '@/components/ui/button';
@@ -150,10 +150,10 @@ const Dashboard = () => {
               onClick={() => setSelectedPeriod(period)}
               variant={selectedPeriod === period ? 'default' : 'outline'}
               size="sm"
-              className={selectedPeriod === period 
+              /*className={selectedPeriod === period 
                 ? 'bg-indigo-600 hover:bg-indigo-700 text-white shadow-md border-0' 
                 : 'border-slate-300 text-slate-600 hover:bg-slate-50'
-              }
+              }*/
             >
               {period === '7d' ? '7 Days' : period === '30d' ? '30 Days' : '90 Days'}
             </Button>
